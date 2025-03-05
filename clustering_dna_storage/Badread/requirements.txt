@@ -1,0 +1,4 @@
+edlib
+numpy
+matplotlib
+scipy
