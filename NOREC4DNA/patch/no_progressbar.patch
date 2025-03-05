@@ -1,0 +1,12 @@
+diff --git a/norec4dna/Encoder.py b/norec4dna/Encoder.py
+index dd81182..94c37da 100644
+--- a/norec4dna/Encoder.py
++++ b/norec4dna/Encoder.py
+@@ -38,6 +38,7 @@ class Encoder(ABC):
+ 
+     @staticmethod
+     def create_progress_bar(max_value):
++        return None
+         widgets = [progressbar.Percentage(), progressbar.Bar(), ' Encoded: ', progressbar.Counter(), ', ',
+                    progressbar.Variable('Dropped'), ', ', progressbar.AdaptiveETA(), ' ', progressbar.Timer()]
+         return progressbar.ProgressBar(max_value=max_value, widgets=widgets, max_error=False,
