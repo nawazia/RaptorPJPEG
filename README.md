@@ -2,6 +2,8 @@
 
 Official repo for *"Progressive decoding of DNA-stored JPEG data with on-the-fly error correction"*, 2025.
 
+![Decoding cat GIF](data/cat.gif)
+
 ## Description
 
 This repo combines a lot of packages and libraries into one full pipeline, to allow for full image encoding and decoding. We also use Badread as the storage channel simulator preceding clustering.
@@ -72,8 +74,6 @@ python decode.py {file/to/image_FFDX.jpg.ini}
 ```
 This creats a `tmp` dir, iteratively decodes & renders the image.
 Images are saved as `tmp/patched_IDX.bmp`, and a GIF is generated at the end compiling all renders.
-
-![Decoding cat GIF](data/cat.gif)
 
 ### Full pipeline
 
