@@ -266,7 +266,7 @@ def encode(opt):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("path", metavar="file", type=str, help="the bmp file to encode. Will automatically be converted to JPEG")
-    parser.add_argument("--scans", metavar="file", type=str, default="/Users/i/Downloads/ICL/DNA_STorage/code/libjpeg/scans2.txt", help="the scans.txt file to use for JPEG encoding")
+    parser.add_argument("--scans", metavar="file", type=str, default="data/scans2.txt", help="the scans.txt file to use for JPEG encoding")
     parser.add_argument("--chunk_size", metavar="chunk_size", required=False, type=int, default=DEFAULT_CHUNK_SIZE,
                         help="size of chunks to split the file into")
     parser.add_argument("--error_correction", metavar="error_correction", required=False, type=str, default="nocode",

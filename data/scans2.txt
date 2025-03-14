@@ -1,0 +1,9 @@
+# cjpeg -progressive -restart 10B -sample 1x1 -scans scans2.txt cat.bmp > cat2.jpg
+# https://android.googlesource.com/platform/external/libjpeg-turbo/+/d3db2a2634c422286f75c4b38af98837f3d2f0ff/wizard.txt
+
+# Interleaved DC scan for Y,Cb,Cr:
+0,1,2: 0-0,   0, 0 ;
+# AC scans:
+0:     1-63,  0, 0 ;   	# All AC coefficients for Y
+1:     1-63,  0, 0 ;    # All AC coefficients for Cb
+2:     1-63,  0, 0 ;    # All AC coefficients for Cr
