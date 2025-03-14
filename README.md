@@ -73,6 +73,8 @@ python decode.py {file/to/image_FFDX.jpg.ini}
 This creats a `tmp` dir, iteratively decodes & renders the image.
 Images are saved as `tmp/patched_IDX.bmp`, and a GIF is generated at the end compiling all renders.
 
+![Decoding cat GIF](data/cat.gif)
+
 ### Full pipeline
 
 Raptor encoding an uncompressed image, cat.bmp:
