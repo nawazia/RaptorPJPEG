@@ -58,7 +58,7 @@ muscle_exe = ".../muscle-osx-arm64.v5.3"
 ## Usage
 ### Encoding and decoding
 
-* Encoding an uncompressed bmp image:
+Encoding an uncompressed bmp image:
 ```
 python encode.py {file/to/image.bmp} [additional flags]
 ```
@@ -68,7 +68,7 @@ This generates a few files:
 * image_FFDX.jpg_RU10.fasta = FASTA containing generated oligo packets
 * image_FFDX.jpg.ini = config file
 
-* Decoding a FASTA:
+Decoding a FASTA:
 ```
 python decode.py {file/to/image_FFDX.jpg.ini}
 ```
@@ -79,6 +79,7 @@ Images are saved as `tmp/patched_IDX.bmp`, and a GIF is generated at the end com
 
 Raptor encoding an uncompressed image, cat.bmp:
 ```
+cd NOREC4DNA
 python encode.py data/cat.bmp --chunk_size 47 --error_correction reedsolomon --insert_header --overhead 0.5 --p_thr 0.4
 ```
 
