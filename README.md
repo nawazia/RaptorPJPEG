@@ -141,9 +141,5 @@ This project is licensed under the [MIT License](LICENSE)
 
 ## Acknowledgments
 
-Inspiration, code snippets, etc.
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
-* [dbader](https://github.com/dbader/readme-template)
-* [zenorocha](https://gist.github.com/zenorocha/4526327)
-* [fvcproductions](https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46)
+* [Clustering algorithm](https://github.com/Parvfect/clustering_dna_storage) was kindly shared by [Parv Argwal](https://github.com/Parvfect)
+* [NOREC4DNA](https://github.com/umr-ds/NOREC4DNA) was developed by [Peter Michael Schwarz](https://github.com/thejanky) & Bernd Freisleben
