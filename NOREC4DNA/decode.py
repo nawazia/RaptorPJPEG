@@ -16,14 +16,14 @@ from norec4dna import helper
 
 from Bio import SeqIO
 
-catPath = "/Users/i/Downloads/DNA_STorage/code/libjpeg/cat_FFDX.jpg"
-# catPath = "/Users/i/Downloads/DNA_STorage/code/NOREC4DNA/cat.jpg"
+DEBUG = False
+jpeg_path = "/Users/i/Downloads/ICL/DNA_STorage/code/jpeg/cmake-build-release/jpeg"
 
 def create_random_strand(strand_length):
     base_choices = ['A', 'C', 'T', 'G']
     return "".join([random.choice(base_choices) for _ in range(strand_length)])
 
-def create_tmp(src_filename, target_filename):
+def create_tmp(src_filename, target_filename, badread=None):
     shutil.rmtree(os.path.dirname(target_filename))
     os.makedirs(os.path.dirname(target_filename))
     f = open(src_filename)
@@ -31,7 +31,10 @@ def create_tmp(src_filename, target_filename):
     f.close()
 
     t = open(target_filename,"w")
-    replacement_line = "[" + os.path.join(os.path.dirname(first_line[1:-2]), "tmp", os.path.basename(first_line[1:-2])) + "]"
+    if badread:
+        replacement_line = "[" + os.path.join(os.path.dirname(first_line[1:-2]), "tmp", os.path.basename(badread)) + "]"
+    else:
+        replacement_line = "[" + os.path.join(os.path.dirname(first_line[1:-2]), "tmp", os.path.basename(first_line[1:-2])) + "]"
     t.write(replacement_line + "\n")
     t.write(remainder)
     t.close()
@@ -59,14 +62,16 @@ def decode(opt):
         path to JPEG decoded bmps.
     """
     tmp_cpath = os.path.join(os.path.dirname(opt.file), "tmp", os.path.basename(opt.file))
-    fpath, tmp_fpath = create_tmp(opt.file, tmp_cpath)
+    fpath, tmp_fpath = create_tmp(opt.file, tmp_cpath, badread=opt.badread)
 
     original_file = [str(sequence.seq) for sequence in SeqIO.parse(fpath, "fasta")]
+    original_config = ConfigWorkerSimple.ConfigSimple(opt.file)
+    catPath = original_config.config[original_config.config.sections()[0]].get("jpg")
 
     oligoLen = len(original_file[0])
     print("oligoLen:", oligoLen)
 
-    solved = []
+    solved = [0]
     totalChunks = None
     chunks = []
 
@@ -91,17 +96,12 @@ def decode(opt):
             (res, numSolved, mapping, filename) = x.execute()
         except:
             continue
-        solved.append(numSolved)
-        print(f"numStrands: {numStrands} / {len(original_file)}\t\tnumber of solved: {numSolved} / {totalChunks}")
 
         if isinstance(mapping, np.ndarray):
             assert len(mapping) == totalChunks
             chunks.append(mapping.reshape(-1))
-        if res != False:
-            break
-        continue
 
-        if filename and (solved[-2] < numSolved):
+        if filename and (solved[-1] < numSolved):
             print("Running JPEG decoding")
             outPath = os.path.join(os.path.dirname(tmp_fpath), f"patched_{numStrands:04}.jpg")
             mappingPath = os.path.join(os.path.dirname(tmp_fpath), f"{totalChunks}_{chunk_size}.bin")
@@ -135,7 +135,7 @@ def decode(opt):
             print("Saved mapping.bin at:", mappingPath)
 
             try:
-                command = ["/Users/i/Downloads/DNA_STorage/code/jpeg/cmake-build-release/jpeg", outPath, mappingPath]
+                command = [jpeg_path, outPath, mappingPath]
                 print(f"Running command: {shlex.join(command)}")  # Use shlex.join for quoting
                 result = subprocess.run(command, capture_output=True, text=True, check=True) 
                 print(result.stdout)
@@ -145,6 +145,7 @@ def decode(opt):
                 print(e.stdout)
                 print(e.stderr)
             os.remove(outPath)
+        solved.append(numSolved)
 
         print(f"numStrands: {numStrands} / {len(original_file)}\t\tnumber of solved: {numSolved} / {totalChunks}")
         if res != False:
@@ -152,8 +153,9 @@ def decode(opt):
     
     assert solved[-1] == totalChunks
 
-    df = pd.DataFrame(np.array(chunks))
-    df.to_csv("/Users/i/Downloads/DNA_STorage/code/NOREC4DNA/all.csv")
+    if DEBUG:
+        df = pd.DataFrame(np.array(chunks))
+        df.to_csv("/Users/i/Downloads/ICL/DNA_STorage/code/NOREC4DNA/all.csv")
     return solved, os.path.dirname(tmp_fpath)
 
 def create_gif_with_filenames(image_folder, output_gif, duration=0.1, font_path=None, font_size=20, font_color=(255, 255, 255)): #Added font parameters
@@ -217,40 +219,40 @@ def create_gif_with_filenames(image_folder, output_gif, duration=0.1, font_path=
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("file", metavar="file", type=str, help="the file / folder to Decode")
+    parser.add_argument("file", metavar="file", type=str, help="config file")
+    parser.add_argument("--badread", type=str, default=None, help="path to recovered (badread'd & clustered) file path")
     opt = parser.parse_args()
     solved, bmpPath = decode(opt)
 
     create_gif_with_filenames(bmpPath, os.path.join(os.path.dirname(bmpPath), "cat.gif"), duration=1.0)
 
+    if DEBUG:
+        fig = px.line(x=range(len(solved)), y=solved)
+        fig.update_layout(
+        margin=dict(l=20, r=20, t=20, b=20),
+        xaxis=dict(title=dict(text="Number of oligos received")),
+        yaxis=dict(title=dict(text="Number of chunks recovered")),
+        plot_bgcolor='white',
+        font_family="Arial",
+        font_color="black",
+        font_size=16,)
 
-    # # fig = px.line(solved)
-    # fig = px.line(x=range(len(solved)), y=solved)
-    # fig.update_layout(
-    # margin=dict(l=20, r=20, t=20, b=20),
-    # xaxis=dict(title=dict(text="Number of oligos received")),
-    # yaxis=dict(title=dict(text="Number of chunks recovered")),
-    # plot_bgcolor='white',
-    # font_family="Arial",
-    # font_color="black",
-    # font_size=16,)
-
-    # fig.update_xaxes(
-    # mirror=True,
-    # ticks='outside',
-    # showline=True,
-    # linecolor='black',
-    # gridcolor='lightgrey'
-    # )
-    # fig.update_yaxes(
-    #     mirror=True,
-    #     ticks='outside',
-    #     showline=True,
-    #     linecolor='black',
-    #     gridcolor='lightgrey',
-    # )
-    # import plotly.io as pio
-    # pio.write_image(fig, "/Users/i/Desktop/solved.png", scale=3, width=1080, height=620)
-    # # fig.write_html(os.path.join(os.path.dirname(bmpPath), "solved.html"))
-    # fig.show()
-    # pd.DataFrame(solved).to_csv("/Users/i/Downloads/DNA_STorage/code/NOREC4DNA/solved.csv")
+        fig.update_xaxes(
+        mirror=True,
+        ticks='outside',
+        showline=True,
+        linecolor='black',
+        gridcolor='lightgrey'
+        )
+        fig.update_yaxes(
+            mirror=True,
+            ticks='outside',
+            showline=True,
+            linecolor='black',
+            gridcolor='lightgrey',
+        )
+        import plotly.io as pio
+        pio.write_image(fig, "/Users/i/Desktop/solved.png", scale=3, width=1080, height=620)
+        # fig.write_html(os.path.join(os.path.dirname(bmpPath), "solved.html"))
+        fig.show()
+        pd.DataFrame(solved).to_csv("/Users/i/Downloads/ICL/DNA_STorage/code/NOREC4DNA/solved.csv")

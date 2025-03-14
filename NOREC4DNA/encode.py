@@ -17,6 +17,8 @@ NUMBER_OF_CHUNKS_LEN_FORMAT = "I"
 CRC_LEN_FORMAT = "I"
 PACKET_LEN_FORMAT = "I"
 DEFAULT_CHUNK_SIZE = 71
+cjpeg_path = "/Users/i/Downloads/ICL/DNA_STorage/code/libjpeg/cjpeg"
+jpeg_path = "/Users/i/Downloads/ICL/DNA_STorage/code/jpeg/cmake-build-release/jpeg"
 
 def average_base8_length(X):
     """
@@ -55,8 +57,9 @@ def findRI(opt):
         # compress JPEG
         # note: -sample 1x1 is used to avoid chroma subsampling
         # scans.txt is a file containing the number of MCUs in each scan. Defaults to 1 DC scan & 3 AC scans, but can be changed.
-        command = ["/Users/i/Downloads/DNA_STorage/code/libjpeg/cjpeg", "-progressive", "-sample", "1x1", "-scans", opt.scans, opt.path]
+        command = [cjpeg_path, "-progressive", "-sample", "1x1", "-scans", opt.scans, opt.path]
         output_file = opt.path.split(".")[0] + ".jpg"
+        print(os.path.exists(output_file), output_file)
 
         with open(output_file, "wb") as outfile:
             subprocess.run(command, stdout=outfile, check=True, shell=False)
@@ -72,7 +75,7 @@ def findRI(opt):
 
     # first, run JPEG decoder without mapping.bin. Returns number of blocks in DC scan
     try:
-        command = ["/Users/i/Downloads/DNA_STorage/code/jpeg/cmake-build-release/jpeg", output_file]
+        command = [jpeg_path, output_file]
         result = subprocess.run(command, capture_output=True, text=True, check=False)
     except subprocess.CalledProcessError as e: 
         print("Error occurred while running the C program:")
@@ -111,7 +114,7 @@ def findRI(opt):
         # compress JPEG
         # note: -sample 1x1 is used to avoid chroma subsampling
         # scans.txt is a file containing the number of MCUs in each scan. Defaults to 1 DC scan & 3 AC scans, but can be changed.
-        command = ["/Users/i/Downloads/DNA_STorage/code/libjpeg/cjpeg", "-progressive", "-restart", f"{ri}B", "-sample", "1x1", "-scans", opt.scans, opt.path]
+        command = [cjpeg_path, "-progressive", "-restart", f"{ri}B", "-sample", "1x1", "-scans", opt.scans, opt.path]
         output_file = opt.path.split(".")[0] + ".jpg"
 
         with open(output_file, "wb") as outfile:
@@ -241,7 +244,7 @@ def encodeFile(opt, _file, eosChunkIdx):
                                     overhead=opt.overhead, checksum_len_str=opt.header_crc_str, xor_by_seed=opt.xor_by_seed, mask_id=not opt.no_mask_id,
                                     id_spacing=opt.id_spacing, priority_chunks=eosChunkIdx, p_thr=opt.p_thr)
     conf = {'error_correction': opt.error_correction, 'repair_symbols': opt.repair_symbols, 'asdna': True,
-            'number_of_splits': 1, 'read_all': True, "priority_chunks": eosChunkIdx, "p_thr": opt.p_thr}
+            'number_of_splits': 1, 'read_all': True, "priority_chunks": eosChunkIdx, "p_thr": opt.p_thr, "jpg": _file}
     config_filename = encoder_instance.save_config_file(conf, add_dot_fasta=True)
     print("Saved config file: %s" % config_filename)
     return outfile, config_filename, encoder_instance.oligoLen
@@ -263,7 +266,7 @@ def encode(opt):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("path", metavar="file", type=str, help="the bmp file to encode. Will automatically be converted to JPEG")
-    parser.add_argument("--scans", metavar="file", type=str, default="/Users/i/Downloads/DNA_STorage/code/libjpeg/scans2.txt", help="the scans.txt file to use for JPEG encoding")
+    parser.add_argument("--scans", metavar="file", type=str, default="/Users/i/Downloads/ICL/DNA_STorage/code/libjpeg/scans2.txt", help="the scans.txt file to use for JPEG encoding")
     parser.add_argument("--chunk_size", metavar="chunk_size", required=False, type=int, default=DEFAULT_CHUNK_SIZE,
                         help="size of chunks to split the file into")
     parser.add_argument("--error_correction", metavar="error_correction", required=False, type=str, default="nocode",

@@ -132,14 +132,10 @@ class RU10Encoder(Encoder):
         def _encode(pseudo, count=None):
             new_pack = self.create_new_packet()
             if self.rules is not None:
-                while should_drop_packet(self.rules, new_pack, self.upper_bound):# or invalidPriority(new_pack, count, self.priority_chunks):
+                while should_drop_packet(self.rules, new_pack, self.upper_bound) or invalidPriority(new_pack, count, self.priority_chunks):
                     del new_pack
                     new_pack = self.create_new_packet()
                     self.ruleDrop += 1
-                # while invalidPriority(new_pack, count, self.priority_chunks):
-                #     del new_pack
-                #     new_pack = self.create_new_packet()
-                #     self.ruleDrop += 1
             if pseudo and new_pack not in self.encodedPackets:
                 self.pseudo_decoder.input_new_packet(new_pack)
             if new_pack.degree == 2:
