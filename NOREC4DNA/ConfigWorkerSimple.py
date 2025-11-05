@@ -36,8 +36,8 @@ def decode2(file, error_correction=nocode, null_is_terminator=False,
             #     return False, 0, None, None
 
             x.filename = ""
-            # x.saveDecodedFile(null_is_terminator=null_is_terminator, print_to_output=False,
-            #                         return_file_name=True, partial_decoding=True)
+            x.saveDecodedFile(null_is_terminator=null_is_terminator, print_to_output=False,
+                                    return_file_name=True, partial_decoding=True)
         except:  # FileNotFoundError: #ValueError
             return False, x.getSolvedCount(), x.GEPP.result_mapping, x.filename
         
