@@ -104,3 +104,12 @@ class ConfigSimple:
             # raise ex
             print("Error decoding file: ", ex)
         return decoded
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1:
+        file = sys.argv[1]
+    else:
+        raise FileExistsError("No config file given!")
+    x = ConfigSimple(file)
+    x.execute()
