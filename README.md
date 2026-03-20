@@ -1,6 +1,6 @@
 # RaptorPJPEG
 
-Official repo for *["Progressive decoding of DNA-stored JPEG data with on-the-fly error correction"](https://www.biorxiv.org/content/10.1101/2025.10.26.684640v1)*, 2025.
+Official repo for *["Progressive decoding of DNA-stored JPEG data with on-the-fly error correction"](https://www.biorxiv.org/content/10.1101/2025.10.26.684640)*, 2025.
 
 ![Decoding cat GIF](data/cat.gif)
 
